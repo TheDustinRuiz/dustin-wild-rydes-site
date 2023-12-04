@@ -53,9 +53,6 @@ let map;
         pronoun = unicorn.Gender === 'Male' ? 'his' : 'her';
         displayUpdate(unicorn.Name + ', your ' + unicorn.Color + ' unicorn, is on ' + pronoun + ' way.', unicorn.Color);
 
-        console.log(pickupLocation);
-        //  get the local weather, find nearby restaurants, movies
-        // getWeather(pickupLocation, unicorn)
 
         animateArrival(function animateCallback() {
             displayUpdate(unicorn.Name + ' has arrived. Giddy up!', unicorn.Color);
@@ -69,6 +66,7 @@ let map;
     // Register click handler for #request button
     $(function onDocReady() {
         $('#request').click(handleRequestClick);
+        $('#getWeatherButton').click(getCity);
 
         WildRydes.authToken.then(function updateAuthMessage(token) {
             if (token) {
@@ -136,6 +134,51 @@ let map;
         requestButton.prop('disabled', false);
     }
 
+    //  getCity
+    //      Get the name of the city entered
+    function getCity() {
+        const enteredCity = $('#cityInput').val();
+        if (enteredCity) {
+            getWeather(enteredCity);
+        } else {
+            displayUpdate('Please enter a city name.');
+        }
+    }
+
+    //  getWeather
+    //      Gets the weather data of the city
+    function getWeather(city) {
+        const apiKey = 'c503672a4cc9aaf0b0e0912e3872188c';
+        const apiGatewayUrl = _config.api.weatherInvokeUrl;
+        const endpoint = '/weather'; 
+    
+        $.ajax({
+            method: 'GET',
+            url: `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`,
+            dataType: 'json',
+            success: function(data) {
+                handleWeatherData(data);
+            },
+            error: function(err) {
+                console.error('Error getting weather information:', err);
+            }
+        });
+    }
+    
+    //  handleWeatherData
+    //      Function to work with the data of the weather
+    function handleWeatherData(result) {
+        try {
+            const temperature = ((result.main.temp - 273.15) * 1.8) + 32;
+            weatherUpdate('Temperature: ' + temperature.toFixed(2) + '°F');
+            weatherUpdate('Weather: ' + result.weather[0].description);
+        } catch (e) {
+            console.error('Error parsing weather response: ', e);
+            weatherUpdate('Error getting weather information.');
+        }
+        
+    }
+
     //  handleRequestClick
     //      get current request location and POST request to server
     function handleRequestClick(event) {
@@ -177,5 +220,13 @@ let map;
 //      nice utility method to show message to user
 function displayUpdate(text, color='green') {
     $('#updates').prepend($(`<li style="background-color:${color}">${text}</li>`));
+    //$('#weather-info').text(text);
 }
+
+//  weatherUpdate
+//      nice utility method to show weather to user
+function weatherUpdate(text, color='cyan') {
+    $('#updates').prepend($(`<li style="background-color:${color}">${text}</li>`));
+}
+
 

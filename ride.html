@@ -18,6 +18,7 @@
           crossorigin=""/>
     <link rel="stylesheet" href="/css/ride.css">
     <link rel="stylesheet" href="/css/message.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.1023.0/aws-sdk.min.js"></script>
 </head>
 
 <body>
@@ -37,6 +38,8 @@
             <ol id="updates">
                 <li>Welcome! Click the map to set your pickup location.</li>
             </ol>
+            <input type="text" id="cityInput" placeholder="Enter city name">
+            <button id="getWeatherButton">Get Weather</button>
         </div>
     </div>
 
